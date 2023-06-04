@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "913269839963",
+    "project_id": "nequifirebase",
+    "storage_bucket": "nequifirebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:913269839963:android:ab503e1e3dbad960d6877e",
+        "android_client_info": {
+          "package_name": "com.example.nequifirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "913269839963-3f0f46rdufkkfbqn2b91ghvh9qdtsv9v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDT6ZxM5VI23YmCkqo2g1ox2hsLoO8M2qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "913269839963-3f0f46rdufkkfbqn2b91ghvh9qdtsv9v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
