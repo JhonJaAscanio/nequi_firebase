@@ -1,12 +1,16 @@
 package com.example.nequifirebase.model;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 public class DatabaseHelper {
     private DatabaseReference databaseReference,databaseReferenceTransfer,databaseReferenceCard;
@@ -62,22 +66,41 @@ public class DatabaseHelper {
 
 
     ///////////EDITAR REGISTROS EN FIREBASE//////////////////////////////////////
-    public void editBalance(String telefono, User editedUsers, final DataCallback<Boolean> callback) {
+
+    public void updateBalance(String telefono, String newBalance, final DataCallback<Boolean> callback) {
         databaseReference.orderByChild("telefono").equalTo(telefono).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().setValue(editedUsers);
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String userId = snapshot.getKey();
+                        DatabaseReference userRef = getUserRef(userId);
+                        HashMap<String, Object> updateData = new HashMap<>();
+                        updateData.put("saldo", newBalance);
+
+                        userRef.updateChildren(updateData, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                if (databaseError == null) {
+                                    callback.onDataLoaded(true);
+                                } else {
+                                    callback.onDataLoaded(false);
+                                }
+                            }
+                        });
+                    }
+                } else {
+                    callback.onDataLoaded(false);
                 }
-                callback.onDataLoaded(true);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                callback.onDataError(databaseError.getMessage());
+                callback.onDataLoaded(false);
             }
         });
     }
+
 
     public void checkUserExists(String email, final DataCallback<Boolean> callback) {
         // Realiza una consulta en la base de datos para verificar si existe un usuario con el correo electrónico dado
@@ -155,6 +178,35 @@ public class DatabaseHelper {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 callback.onDataError(databaseError.getMessage());
+            }
+        });
+    }
+
+    public DatabaseReference getUserRef(String userId) {
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("users").child(userId);
+        return userRef;
+    }
+
+    public void getBalance(String telefono, final DataCallback<Double> callback) {
+        databaseReference.orderByChild("telefono").equalTo(telefono).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        User user = snapshot.getValue(User.class);
+                        if (user != null) {
+                            Double balance = Double.parseDouble(user.getSaldo());
+                            callback.onDataLoaded(balance);
+                        }
+                    }
+                } else {
+                    callback.onDataError("El usuario no existe");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onDataError("Error al obtener el saldo");
             }
         });
     }

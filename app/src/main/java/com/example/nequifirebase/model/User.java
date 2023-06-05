@@ -17,6 +17,9 @@ public class User {
         this.pin = pin;
         this.saldo = saldo;
     }
+    public User(Double saldo){
+        this.saldo = Double.toString(saldo);
+    }
 
     public String getNombre() {
         return nombre;

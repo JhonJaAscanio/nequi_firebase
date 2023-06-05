@@ -25,7 +25,7 @@ public class StartPresenter implements StartContract.Presenter{
                     // Actualiza la Vista con los datos del usuario
                     view.showUserInfo(name, saldo);
 
-                    
+
                 } else {
                     // Manejo de errores o acciones en caso de que no se encuentren los datos del usuario
                 }

@@ -6,22 +6,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.example.nequifirebase.R;
-import com.example.nequifirebase.model.DatabaseHelper;
-import com.example.nequifirebase.presenter.LoginContract;
-import com.example.nequifirebase.presenter.LoginPresenter;
 import com.example.nequifirebase.presenter.SendMoneyContract;
 import com.example.nequifirebase.presenter.SendMoneyPresenter;
 import com.example.nequifirebase.presenter.SessionManager;
-import com.example.nequifirebase.presenter.StartPresenter;
 
 public class SendMoneyActivity extends AppCompatActivity implements SendMoneyContract.View {
 
     private EditText etCelDestino,etMonto,etMensaje;
-    private SendMoneyContract.Presenter presenter;
-    private StartPresenter presenterSaldo;
+    private TextView tvDispo2;
+    private SendMoneyContract.Presenter presenter,presenterSaldo;
     private String datoTelefono;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,22 +27,32 @@ public class SendMoneyActivity extends AppCompatActivity implements SendMoneyCon
         etCelDestino=findViewById(R.id.etCel);
         etMonto=findViewById(R.id.etMonto);
         etMensaje=findViewById(R.id.etMensaje);
+        tvDispo2=findViewById(R.id.tvDispo2);
         //Recuperar datos del SharedPreference
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         datoTelefono = sessionManager.getPhone();
 
         presenter = new SendMoneyPresenter(this);
+        presenter.getUserInfo(datoTelefono);
 
-     /*   // Crea una instancia del presenter y pásale la referencia de DatabaseHelper
-        presenterSaldo = new StartPresenter(this, new DatabaseHelper());
 
-        // Llama al método para obtener los datos del usuario
-        presenterSaldo.getUserInfo(datoTelefono);*/
+
+    }
+
+    @Override
+    public void showUserInfo(String name, String saldo) {
+        tvDispo2.setText(saldo);
     }
 
 
     public void Transferir(View v){
+
         String num_destino=etCelDestino.getText().toString();
+
+        presenterSaldo = new SendMoneyPresenter(this);
+        presenterSaldo.getUserInfo(num_destino);
+
+
         String monto=etMonto.getText().toString();
         String mensaje=etMensaje.getText().toString();
         String forma_pago="Disponible";
@@ -68,4 +74,5 @@ public class SendMoneyActivity extends AppCompatActivity implements SendMoneyCon
         Intent intent = new Intent(this, StartActivity.class);
         startActivity(intent);
     }
+
 }
